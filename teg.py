@@ -29,7 +29,7 @@ class Card:
             cult = " Culture, "
         else:
             cult = " Energy, "
-            
+
         if self.stonks:
             stks = " Economy, "
         else:
@@ -79,13 +79,15 @@ class Deck:
 
     def show_cards(self):
         for card in self.shown:
-            print("=== Position:\t", card.pos)
-            print("=== Name:\t", card.name)
-            print("=== Resource:\t", "Culture" if card.culture else "Energy")
-            print("=== Track:\t", "Economy" if card.stonks else "Diplomacy")
-            print("=== Points:\t", card.points)
-            print(card.text)
-            print(*card.rockets)
+            def card_print(*val):
+                print(val, sep="\t")
+            card_print("=== Position:\t", card.pos)
+            card_print("=== Name:\t", card.name)
+            card_print("=== Resource:\t", "Culture" if card.culture else "Energy")
+            card_print("=== Track:\t", "Economy" if card.stonks else "Diplomacy")
+            card_print("=== Points:\t", card.points)
+            card_print(card.text)
+            card_print(*card.rockets)
             print()
 
     def show(self):
