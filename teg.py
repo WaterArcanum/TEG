@@ -214,16 +214,15 @@ class Player:
 
             else:
                 if dice[use] == "Colonization":
-                    colony = input("Do you want to activate one of your cards [A] or upgrade your empire? [U]\n")
-                    if colony == 'U':
-                        if self.cult > self.level and self.energy > self.level:
-                            cultpay = input("Do you want to upgrade using Culture [C] or Energy [E]\n?")
-                            if cultpay == 'C':
-                                self.levelup(1)
+                    colony = input(
+                        "Do you want to activate one of your cards [A] or upgrade your empire? [U]\n").lower()
+                    if colony == 'u':
+                        if self.cult > self.level:
+                            if self.energy > self.level:
+                                cultpay = input("Do you want to upgrade using Culture [C] or Energy [E]\n?").lower()
+                                self.levelup(1 if cultpay == 'c' else 0)
                             else:
-                                self.levelup(0)
-                        elif self.cult > self.level:
-                            self.levelup(1)
+                                self.levelup(1)
                         else:
                             print("jj")
                     # Colonization
