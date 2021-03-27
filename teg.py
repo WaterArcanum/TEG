@@ -80,10 +80,10 @@ class Deck:
     def show_cards(self):
         for card in self.shown:
             print("=== Position:\t", card.pos)
-            print("=== Name:\t", card.name)
+            print("=== Name:\t\t", card.name)
             print("=== Resource:\t", "Culture" if card.culture else "Energy")
-            print("=== Track:\t", "Economy" if card.stonks else "Diplomacy")
-            print("=== Points:\t", card.points)
+            print("=== Track:\t\t", "Economy" if card.stonks else "Diplomacy")
+            print("=== Points:\t\t", card.points)
             print(card.text)
             print(*card.rockets)
             print()
