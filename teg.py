@@ -100,6 +100,7 @@ class Player:
         self.pts = 0
         self.ships = 2
         self.dice = 4
+        self.deck = Deck()
 
     def show(self):
         print("Level:", self.level, "Ships:", self.ships, "Dice:", self.dice, "Energy:", self.energy,
@@ -234,28 +235,28 @@ class Player:
                         if flywith < len(self.ship):
                             if self.ship[flywith] is not None:
                                 gcheck = 0
-                                d.show_cards()
+                                self.deck.show_cards()
                                 while True:
                                     fly = intput("Which galaxy do you want to fly to?")
-                                    if fly < len(d.shown):
+                                    if fly < len(self.deck.shown):
                                         while True:
                                             orbit = input(
                                                 "Do you want to fly to the Orbit [O] or to the Surface [S]?\n")
                                             if (any("Player" in sublist for sublist in
-                                                    d.shown[fly].rockets[1:])
+                                                    self.deck.shown[fly].rockets[1:])
                                                     if orbit == "O" else "Player"
-                                                    in d.shown[fly].rockets[0]):
+                                                    in self.deck.shown[fly].rockets[0]):
                                                 print("You have already occupied this galaxy!")
                                                 gcheck = 1
                                                 break
                                             else:
-                                                if self.ship[flywith] == d.shown[fly].name:
+                                                if self.ship[flywith] == self.deck.shown[fly].name:
                                                     print(
                                                         "You cannot fly between the orbit and the surface!")
                                                 else:
-                                                    d.shown[fly].rockets[0 if orbit == "S" else 1].append(
+                                                    self.deck.shown[fly].rockets[0 if orbit == "S" else 1].append(
                                                         "Player")
-                                                    self.ship[flywith] = d.shown[fly].name
+                                                    self.ship[flywith] = self.deck.shown[fly].name
                                                     break
                                     if not gcheck:
                                         break
@@ -268,7 +269,7 @@ class Player:
                 if dice[use] == "Energy" or "Culture":
                     is_economy = True if dice[use] == "Energy" else False
                     for shiploc in self.ship:
-                        for galaxy in d.shown:
+                        for galaxy in self.deck.shown:
                             if shiploc == galaxy.name and is_economy and galaxy.culture == 0:
                                 self.energy += 1
                             elif not is_economy and shiploc == galaxy.name and galaxy.culture == 1:
@@ -281,7 +282,7 @@ class Player:
                     print("hi")
                     is_economy = True if dice[use] == "Economy" else False
                     for shiploc in self.ship:
-                        for galaxy in d.shown:
+                        for galaxy in self.deck.shown:
                             # print(galaxy.name, shiploc, ": ", shiploc == galaxy.name and e==1 and
                             # galaxy.stonks==1)
                             if shiploc == galaxy.name and is_economy and galaxy.stonks:
@@ -344,7 +345,7 @@ class Player:
 """
 
 # if __name__ == "__main__":
-d = Deck()
+# d = Deck()
 # d.show()
 # d.showCards()
 g = Card(0, 0, 0, 0)
