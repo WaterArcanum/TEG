@@ -1,6 +1,18 @@
 import random
 
 
+def intput(prompt, errormsg="Invalid input."):
+    print(prompt + " ")
+    while True:
+        userinput = input()
+        try:
+            userinput = int(userinput)
+        except ValueError:
+            print(errormsg)
+        else:
+            return userinput
+
+
 class Card:
     def __init__(self, length, pts, cult, stonks, text="-", name=""):
         self.length = length
@@ -79,18 +91,6 @@ class Deck:
     def show(self):
         for card in self.cards:
             card.show()
-
-
-def intput(prompt, errormsg="Invalid input."):
-    print(prompt + " ")
-    while True:
-        userinput = input()
-        try:
-            userinput = int(userinput)
-        except ValueError:
-            print(errormsg)
-        else:
-            return userinput
 
 
 class Player:
