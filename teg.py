@@ -21,7 +21,7 @@ class Card:
         self.stonks = stonks
         self.text = text
         self.name = name
-        self.rockets = [["Player"] for _ in range(int(length) + 1)]  # +Orbit
+        self.rockets = [[None] for _ in range(int(length) + 1)]  # +Orbit
         self.pos = 0
 
     def show(self):
@@ -69,10 +69,10 @@ class Deck:
             r = random.randint(0, i)
             self.cards[i], self.cards[r] = self.cards[r], self.cards[i]
 
-    def draw(self, index):
+    def draw(self, pindex):
         card = self.cards.pop()
         self.shown.append(card)
-        card.pos = index
+        card.pos = pindex
 
     def show_cards(self):
         for card in self.shown:
@@ -90,6 +90,11 @@ class Deck:
             card.show()
 
 
+def show_dice(dice):
+    for dienum in range(len(dice)):
+        print(dienum, ": ", dice[dienum], sep="")
+
+
 class Player:
     ship = ["Drewkaiden", "Jakks", None, None]
 
@@ -99,16 +104,20 @@ class Player:
         self.energy = 2
         self.pts = 0
         self.ships = 2
-        self.dice = 4
+        self.die_count = 4
+        self.dice = []
         self.deck = Deck()
+        for die in range(self.die_count):
+            throw = random.randint(1, 6)
+            self.dice.append(action.get(throw))
 
     def show(self):
-        print("Level:", self.level, "Ships:", self.ships, "Dice:", self.dice, "Energy:", self.energy,
+        print("Level:", self.level, "Ships:", self.ships, "Dice:", self.die_count, "Energy:", self.energy,
               "Culture:", self.cult, "Points:", self.pts)
 
     def levelup(self, cultpay):
         if self.level % 2:
-            self.dice += 1
+            self.die_count += 1
         else:
             self.ships += 1
         self.level += 1
@@ -118,25 +127,10 @@ class Player:
             self.energy -= self.level
         self.show()
 
-    def dice_throw(self):
+    def die_reroll(self):
         rerolled = False
-        action = {
-            1: "Colonization",
-            2: "Rocket",
-            3: "Energy",
-            4: "Culture",
-            5: "Economy",
-            6: "Diplomacy"
-        }
-        actions = []
-        for i in action:
-            actions.append(action.get(i))
 
-        def show_dice():
-            for dienum in range(len(dice)):
-                print(dienum, ": ", dice[dienum], sep="")
-
-        dice = [] * self.dice
+        dice = [] * self.die_count
         while True:
             if rerolled:
                 for ice in range(len(dice)):
@@ -144,25 +138,25 @@ class Player:
                         throw = random.randint(1, 6)
                         dice[ice] = action.get(throw)
             else:
-                for die in range(self.dice):
+                for die in range(self.die_count):
                     throw = random.randint(1, 6)
                     dice.append(action.get(throw))
 
             print("You have thrown:")
-            show_dice()
+            show_dice(dice)
 
             if rerolled:
                 break
             else:
                 while True:
                     reroll = intput("How many do you wish to reroll?")
-                    if reroll > self.dice:
+                    if reroll > self.die_count:
                         print("You don't have that many dice!")
                     elif reroll < 0:
                         print("Cannot reroll less than 0 dice!")
                     else:
                         break
-                if reroll == self.dice:
+                if reroll == self.die_count:
                     pass
                 elif reroll > 0:
                     for i in range(reroll):
@@ -178,10 +172,12 @@ class Player:
                 elif reroll == 0:
                     break
                 rerolled = True
+        return dice
 
+    def die_convert(self):
         convert = input("Do you wish to use the convertor? (two dice to set one)\n")
         if convert:
-            show_dice()
+            show_dice(self.dice)
             for inst in range(1, 4):
                 num = {
                     1: "first",
@@ -190,37 +186,39 @@ class Player:
                 }
                 while True:
                     discard = intput("Select the number of the " + num.get(inst) + " die you wish to convert: ")
-                    if discard > len(dice) - 1 or discard < 0:
+                    if discard > len(self.dice) - 1 or discard < 0:
                         print("Such die does not exist!")
-                    elif dice[discard] == "converted":
+                    elif self.dice[discard] == "converted":
                         print("You have already converted this die!")
                     else:
-                        dice[discard] = "converted"
+                        self.dice[discard] = "converted"
                         break
             while True:
-                print(dice)
+                print(self.dice)
                 newdie = input("Which action would you want to set? ")
-                if newdie in actions:
-                    for i in range(self.dice - 1, -1, -1):
-                        if dice[i] == 'converted':
-                            del dice[i]
-                    dice.append(newdie)
+                if newdie in action:
+                    for i in range(self.die_count - 1, -1, -1):
+                        if self.dice[i] == 'converted':
+                            del self.dice[i]
+                    self.dice.append(newdie)
                     break
+        print()
+
+    def die_use(self):
         while True:
-            show_dice()
+            show_dice(self.dice)
             use = intput("Which die do you want to use? ")
 
-            if use >= len(dice):
+            if use >= len(self.dice):
                 print("Invalid input.")
 
             else:
-                if dice[use] == "Colonization":
-                    colony = input(
-                        "Do you want to activate one of your cards [A] or upgrade your empire? [U]\n").lower()
+                if self.dice[use] == "Colonization":
+                    colony = input("Do you want to [A]ctivate one of your cards or [U]pgrade your empire?").lower()
                     if colony == 'u':
                         if self.cult > self.level:
                             if self.energy > self.level:
-                                cultpay = input("Do you want to upgrade using Culture [C] or Energy [E]\n?").lower()
+                                cultpay = input("Do you want to upgrade using [C]ulture or [E]nergy?").lower()
                                 self.levelup(1 if cultpay == 'c' else 0)
                             else:
                                 self.levelup(1)
@@ -228,59 +226,48 @@ class Player:
                             print("jj")
                     # Colonization
 
-                if dice[use] == "Rocket":
+                if self.dice[use] == "Rocket":
                     print(*self.ship)
                     while True:
-                        flywith = intput("Which rocket do you want to use?")
-                        if flywith < len(self.ship):
-                            if self.ship[flywith] is not None:
-                                gcheck = 0
+                        rocket_id = intput("Which rocket do you want to use?")
+                        if rocket_id < len(self.ship):
+                            if self.ship[rocket_id] is not None:
                                 self.deck.show_cards()
                                 while True:
                                     fly = intput("Which galaxy do you want to fly to?")
                                     if fly < len(self.deck.shown):
-                                        while True:
-                                            orbit = input(
-                                                "Do you want to fly to the Orbit [O] or to the Surface [S]?\n")
-                                            if (any("Player" in sublist for sublist in
-                                                    self.deck.shown[fly].rockets[1:])
-                                                    if orbit == "O" else "Player"
-                                                    in self.deck.shown[fly].rockets[0]):
-                                                print("You have already occupied this galaxy!")
-                                                gcheck = 1
-                                                break
+                                        if any("Player" in sublist for sublist in self.deck.shown[fly].rockets):
+                                            print("You have already occupied this galaxy!")
+                                            break
+                                        else:
+                                            orbit = input("Do you want to fly to the [O]rbit or to the [S]urface?")
+                                            if self.ship[rocket_id] == self.deck.shown[fly].name:
+                                                print("You cannot fly between the orbit and the surface.")
                                             else:
-                                                if self.ship[flywith] == self.deck.shown[fly].name:
-                                                    print(
-                                                        "You cannot fly between the orbit and the surface!")
-                                                else:
-                                                    self.deck.shown[fly].rockets[0 if orbit == "S" else 1].append(
-                                                        "Player")
-                                                    self.ship[flywith] = self.deck.shown[fly].name
-                                                    break
-                                    if not gcheck:
-                                        break
+                                                self.deck.shown[fly].rockets[0 if orbit == "S" else 1].append("Player")
+                                                self.ship[rocket_id] = self.deck.shown[fly].name
+                                                break
                                 break
                             else:
                                 print("This ship is not available.")
                         else:
                             print("You do not have that ship.")
 
-                if dice[use] == "Energy" or "Culture":
-                    is_economy = True if dice[use] == "Energy" else False
+                if self.dice[use] == "Energy" or self.dice[use] == "Culture":
+                    is_energy = True if self.dice[use] == "Energy" else False
                     for shiploc in self.ship:
                         for galaxy in self.deck.shown:
-                            if shiploc == galaxy.name and is_economy and galaxy.culture == 0:
+                            if shiploc == galaxy.name and is_energy and galaxy.culture == 0:
                                 self.energy += 1
-                            elif not is_economy and shiploc == galaxy.name and galaxy.culture == 1:
+                            elif not is_energy and shiploc == galaxy.name and galaxy.culture == 1:
                                 self.cult += 1
                         if shiploc == "Galaxy":
                             self.energy += 1
                     self.show()
 
-                if dice[use] == "Diplomacy" or "Economy":  # choose one galaxy lol
+                if self.dice[use] == "Diplomacy" or self.dice[use] == "Economy":  # choose one galaxy lol
                     print("hi")
-                    is_economy = True if dice[use] == "Economy" else False
+                    is_economy = True if self.dice[use] == "Economy" else False
                     for shiploc in self.ship:
                         for galaxy in self.deck.shown:
                             # print(galaxy.name, shiploc, ": ", shiploc == galaxy.name and e==1 and
@@ -302,48 +289,22 @@ class Player:
                             # elif(not e and shiploc == galaxy.name and galaxy.cult == 0): self.cult+=1
                         # if(shiploc == "Galaxy"): self.energy+=1
                     self.show()
-                del dice[use]
+                del self.dice[use]
+
+    def die_throw(self):
+        self.die_reroll()
+        self.die_convert()
+        self.die_use()
 
 
-"""
-    def a(self):
-        print(*self.ship)
-        '''print(d.shown[1].rockets[0])
-        print("Player" in d.shown[1].rockets[0])
-        print(any("Player" in sublist for sublist in d.shown[1].rockets))'''
-        while True:
-            flywith = intput("Which rocket do you want to use?")
-            if flywith < len(self.ship):
-                if self.ship[flywith] is not None:
-                    gcheck = 0
-                    d.show_cards()
-                    while True:
-                        fly = intput("Which galaxy do you want to fly to?")
-                        if fly < len(d.shown):
-                            while True:
-                                orbit = input("Do you want to fly to the Orbit [O] or to the Surface [S]?\n")
-                                if (any("Player" in sublist for sublist in
-                                        d.shown[fly].rockets[1:]) if orbit == "O" else "Player"
-                                                                                       in d.shown[fly].rockets[0]):
-                                    print("You have already occupied this galaxy!")
-                                    gcheck = 1
-                                    break
-                                else:
-                                    if self.ship[flywith] == d.shown[fly].name:
-                                        print("You cannot fly between the orbit and the surface!")
-                                    else:
-                                        d.shown[fly].rockets[0 if orbit == "S" else 1].append("Player")
-                                        self.ship[flywith] = d.shown[fly].name
-                                        break
-                            if not gcheck:
-                                break
-                    break
-                else:
-                    print("This ship is not available.")
-            else:
-                print("You do not have that ship.")
-"""
-
+action = {
+    1: "Colonization",
+    2: "Rocket",
+    3: "Energy",
+    4: "Culture",
+    5: "Economy",
+    6: "Diplomacy"
+}
 # if __name__ == "__main__":
 # d = Deck()
 # d.show()
@@ -354,7 +315,7 @@ p.show()
 # p.rockettest()
 # p.a()
 # p.a()
-p.dice_throw()
+p.die_throw()
 for _ in range(5):
     p.levelup(1)
     # p.show()
