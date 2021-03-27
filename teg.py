@@ -29,7 +29,7 @@ class Card:
             cult = " Culture, "
         else:
             cult = " Energy, "
-            
+
         if self.stonks:
             stks = " Economy, "
         else:
@@ -191,7 +191,7 @@ class Player:
                     3: "third"
                 }
                 while True:
-                    discard = intput("Select the number of the" + num.get(inst) + "die you wish to convert: ")
+                    discard = intput("Select the number of the " + num.get(inst) + " die you wish to convert: ")
                     if discard > len(dice) - 1 or discard < 0:
                         print("Such die does not exist!")
                     elif dice[discard] == "converted":
@@ -244,8 +244,7 @@ class Player:
                                     if fly < len(d.shown):
                                         while True:
                                             orbit = input(
-                                                "Do you want to fly to the Orbit [O] or to the Surface ["
-                                                "S]?\n")
+                                                "Do you want to fly to the Orbit [O] or to the Surface [S]?\n")
                                             if (any("Player" in sublist for sublist in
                                                     d.shown[fly].rockets[1:])
                                                     if orbit == "O" else "Player"
@@ -271,12 +270,12 @@ class Player:
                             print("You do not have that ship.")
 
                 if dice[use] == "Energy" or "Culture":
-                    e = True if dice[use] == "Energy" else False
+                    is_economy = True if dice[use] == "Energy" else False
                     for shiploc in self.ship:
                         for galaxy in d.shown:
-                            if shiploc == galaxy.name and e and galaxy.culture == 0:
+                            if shiploc == galaxy.name and is_economy and galaxy.culture == 0:
                                 self.energy += 1
-                            elif not e and shiploc == galaxy.name and galaxy.culture == 1:
+                            elif not is_economy and shiploc == galaxy.name and galaxy.culture == 1:
                                 self.cult += 1
                         if shiploc == "Galaxy":
                             self.energy += 1
@@ -284,12 +283,12 @@ class Player:
 
                 if dice[use] == "Diplomacy" or "Economy":  # choose one galaxy lol
                     print("hi")
-                    e = True if dice[use] == "Economy" else False
+                    is_economy = True if dice[use] == "Economy" else False
                     for shiploc in self.ship:
                         for galaxy in d.shown:
                             # print(galaxy.name, shiploc, ": ", shiploc == galaxy.name and e==1 and
                             # galaxy.stonks==1)
-                            if shiploc == galaxy.name and e and galaxy.stonks:
+                            if shiploc == galaxy.name and is_economy and galaxy.stonks:
                                 yeah = 0
                                 for loc in galaxy.rockets:
                                     if loc != 0 and "Player" in loc:
