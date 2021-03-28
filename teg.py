@@ -76,14 +76,14 @@ class Deck:
 
     def show_cards(self):
         for card in self.shown:
-            print("=== Position:\t", card.pos)
-            print("=== Name:\t\t", card.name)
-            print("=== Resource:\t", "Culture" if card.culture else "Energy")
-            print("=== Track:\t\t", "Economy" if card.stonks else "Diplomacy")
-            print("=== Points:\t\t", card.points)
+            print(card.pos, ". ",
+                  card.name, "" if (len(card.name) > 7) else "\t", "\t| ",
+                  "Culture" if card.culture else "Energy", "\t| ",
+                  "Economy" if card.stonks else "Diplomacy", "\t| ",
+                  card.points, " points" if int(card.points) > 1 else " point", sep="")
             print(card.text)
             print(*card.rockets)
-            print()
+            print('='*45)
 
     def show(self):
         for card in self.cards:
@@ -212,7 +212,7 @@ class Player:
                         print("Out of range!")
                     else:
                         break
-                for i in range(self.die_count-1, -1, -1):
+                for i in range(self.die_count - 1, -1, -1):
                     if self.dice[i] == 'converted':
                         del self.dice[i]
                 self.dice.append(action[newdie])
