@@ -185,7 +185,7 @@ class Player:
                 rerolled = True
 
     def die_convert(self):
-        convert = input("Do you wish to use the convertor? (two dice to set one)\n")
+        convert = input("Do you wish to use the convertor? (two dice to set one) ")
         if convert:
             show_dice(self.dice)
             for inst in range(1, 4):
