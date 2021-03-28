@@ -339,12 +339,24 @@ action = {
 if __name__ == "__main__":
     p = Player()
     deck = Deck()
+    converted = False
+
     p.show_stats()
     while True:
-        move = input("S — Stats; P — Planets; R — Roll dice; C — Convert dice; U — Use dice").lower()
+        move = input("S — Stats; P — Planets; R — Roll dice; C — Convert dice; U — Use dice\n").lower()
         if move == 's':
             p.show_stats()
-        if move == 'p':
+        elif move == 'p':
             deck.show_cards()
-        break
-    p.die_throw()
+        elif move == 'r':
+            p.die_reroll()
+        elif move == 'c':
+            if not converted:
+                p.die_convert()
+                converted = True
+            else:
+                print("You have already converted this turn.")
+        elif move == 'u':
+            p.die_use()
+        else:
+            print("Invalid input.")
