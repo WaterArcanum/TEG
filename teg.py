@@ -106,7 +106,6 @@ class Player:
         self.ships = 2
         self.die_count = 4
         self.dice = [] * self.die_count
-        self.deck = Deck()
         for die in range(self.die_count):
             throw = random.randint(1, 6)
             self.dice.append(action.get(throw))
@@ -255,20 +254,20 @@ class Player:
                         rocket_id = intput("Which rocket do you want to use?")
                         if rocket_id < len(self.ship):
                             if self.ship[rocket_id] is not None:
-                                self.deck.show_cards()
+                                deck.show_cards()
                                 while True:
                                     fly = intput("Which galaxy do you want to fly to?")
-                                    if fly < len(self.deck.shown):
-                                        if any("Player" in sublist for sublist in self.deck.shown[fly].rockets):
+                                    if fly < len(deck.shown):
+                                        if any("Player" in sublist for sublist in deck.shown[fly].rockets):
                                             print("You have already occupied this galaxy!")
                                             break
                                         else:
                                             orbit = input("Do you want to fly to the [O]rbit or to the [S]urface?")
-                                            if self.ship[rocket_id] == self.deck.shown[fly].name:
+                                            if self.ship[rocket_id] == deck.shown[fly].name:
                                                 print("You cannot fly between the orbit and the surface.")
                                             else:
-                                                self.deck.shown[fly].rockets[0 if orbit == "S" else 1].append("Player")
-                                                self.ship[rocket_id] = self.deck.shown[fly].name
+                                                deck.shown[fly].rockets[0 if orbit == "S" else 1].append("Player")
+                                                self.ship[rocket_id] = deck.shown[fly].name
                                                 break
                                 break
                             else:
@@ -282,7 +281,7 @@ class Player:
                 if self.dice[use] == action[2] or self.dice[use] == action[3]:
                     is_energy = True if self.dice[use] == "Energy" else False
                     for shiploc in self.ship:
-                        for galaxy in self.deck.shown:
+                        for galaxy in deck.shown:
                             if shiploc == galaxy.name:
                                 if is_energy and galaxy.culture == 0:
                                     self.energy += 1
@@ -300,7 +299,7 @@ class Player:
                 if self.dice[use] == action[4] or self.dice[use] == action[5]:  # choose one galaxy lol
                     is_economy = True if self.dice[use] == action[4] else False
                     for shiploc in self.ship:
-                        for galaxy in self.deck.shown:
+                        for galaxy in deck.shown:
                             # print(galaxy.name, shiploc, ": ", shiploc == galaxy.name and e==1 and
                             # galaxy.stonks==1)
                             if shiploc == galaxy.name and is_economy and galaxy.stonks:
@@ -339,12 +338,13 @@ action = {
 
 if __name__ == "__main__":
     p = Player()
+    deck = Deck()
     p.show_stats()
     while True:
         move = input("S — Stats; P — Planets; R — Roll dice; C — Convert dice; U — Use dice").lower()
         if move == 's':
             p.show_stats()
         if move == 'p':
-            p.deck.show_cards()
+            deck.show_cards()
         break
     p.die_throw()
