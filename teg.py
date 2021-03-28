@@ -2,7 +2,7 @@ import random
 
 
 def intput(prompt, errormsg="Invalid input."):
-    print(prompt + " ")
+    print(prompt, end=" ")
     while True:
         userinput = input()
         try:
