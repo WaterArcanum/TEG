@@ -205,13 +205,19 @@ class Player:
                         break
             while True:
                 print(self.dice)
-                newdie = input("Which action would you want to set? ")
-                if newdie in action:
-                    for i in range(self.die_count - 1, -1, -1):
-                        if self.dice[i] == 'converted':
-                            del self.dice[i]
-                    self.dice.append(newdie)
-                    break
+                for i in range(len(action)):
+                    print(i, ": ", action[i], sep="")
+                while True:
+                    newdie = intput("Which action do you want to set? ")
+                    if newdie > len(action) or newdie < 0:
+                        print("Out of range!")
+                    else:
+                        break
+                for i in range(self.die_count-1, -1, -1):
+                    if self.dice[i] == 'converted':
+                        del self.dice[i]
+                self.dice.append(action[newdie])
+                break
 
     def die_use(self):
         while True:
