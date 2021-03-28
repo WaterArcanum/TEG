@@ -336,17 +336,14 @@ action = {
     4: "Economy",
     5: "Diplomacy"
 }
-# if __name__ == "__main__":
-# d = Deck()
-# d.show()
-# d.showCards()
-g = Card(0, 0, 0, 0)
-p = Player()
-p.show_stats()
-# p.rockettest()
-# p.a()
-# p.a()
-p.die_throw()
-for _ in range(5):
-    p.levelup(1)
-    # p.show()
+if __name__ == "__main__":
+    p = Player()
+    p.show_stats()
+    while True:
+        move = input("S — Stats; P — Planets; R — Roll dice; C — Convert dice; U — Use dice").lower()
+        if move == 's':
+            p.show_stats()
+        if move == 'p':
+            p.deck.show_cards()
+        break
+    p.die_throw()
