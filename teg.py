@@ -105,7 +105,7 @@ class Player:
         self.pts = 0
         self.ships = 2
         self.die_count = 4
-        self.dice = []
+        self.dice = [] * self.die_count
         self.deck = Deck()
         for die in range(self.die_count):
             throw = random.randint(1, 6)
@@ -134,7 +134,7 @@ class Player:
 
     def die_reroll(self):
         rerolled = False
-        self.dice = [] * self.die_count
+        # self.dice = [] * self.die_count
 
         while True:
             if rerolled:
@@ -145,7 +145,7 @@ class Player:
             else:
                 for i in range(self.die_count):
                     throw = random.randint(0, 5)
-                    self.dice.append(action.get(throw))
+                    self.dice[i] = action.get(throw)
 
             print("You have thrown:")
             show_dice(self.dice)
@@ -162,17 +162,17 @@ class Player:
                     else:
                         break
                 if reroll == self.die_count:
-                    pass
+                    self.dice = ["rerolled"] * self.die_count
                 elif reroll > 0:
                     for i in range(reroll):
                         while True:
                             num = {
-                                1: "first",
-                                2: "second",
-                                3: "third",
-                                4: "fourth"
+                                0: "first",
+                                1: "second",
+                                2: "third",
+                                3: "fourth"
                             }
-                            nroll = intput("Select the number of the " + num.get(reroll) + " die you wish to reroll: ")
+                            nroll = intput("Select the number of the " + num.get(i) + " die you wish to reroll: ")
                             if nroll > len(self.dice) - 1 or nroll < 0:
                                 print("Such die does not exist!")
                             elif self.dice[nroll] == "rerolled":
