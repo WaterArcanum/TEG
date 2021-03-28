@@ -240,6 +240,8 @@ class Player:
                                 self.levelup(1 if cultpay == 'c' else 0)
                             else:
                                 self.levelup(1)
+                        elif self.energy > self.level:
+                            self.levelup(0)
                         else:
                             print("jj")
                     # Colonization
