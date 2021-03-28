@@ -87,7 +87,7 @@ class Deck:
 
     def show(self):
         for card in self.cards:
-            card.show()
+            card.show_stats()
 
 
 def show_dice(dice):
@@ -111,21 +111,26 @@ class Player:
             throw = random.randint(1, 6)
             self.dice.append(action.get(throw))
 
-    def show(self):
-        print("Level:", self.level, "Ships:", self.ships, "Dice:", self.die_count, "Energy:", self.energy,
-              "Culture:", self.cult, "Points:", self.pts)
+    def show_stats(self):
+        print("Level:", self.level, "| Ships:", self.ships, "| Dice:", self.die_count, "| Energy:", self.energy,
+              "| Culture:", self.cult, "| Points:", self.pts)
 
     def levelup(self, cultpay):
-        if self.level % 2:
+        self.level += 1
+        print("[!] Level up!", sep="", end=" ")
+        if self.level % 2 == 0:
             self.die_count += 1
+            print("Gained 1 die.", end=" ")
         else:
             self.ships += 1
-        self.level += 1
+            print("Gained 1 ship.", end=" ")
         if cultpay:
             self.cult -= self.level
+            print("Spent", self.level, "Culture.")
         else:
             self.energy -= self.level
-        self.show()
+            print("Spent", self.level, "Energy.")
+        self.show_stats()
 
     def die_reroll(self):
         rerolled = False
@@ -276,7 +281,7 @@ class Player:
                                 self.cult += 1
                         if shiploc == "Galaxy":
                             self.energy += 1
-                    self.show()
+                    self.show_stats()
 
                 #
                 # Economy && Diplomacy
@@ -303,7 +308,7 @@ class Player:
                                     print("Player" in loc)
                             # elif(not e and shiploc == galaxy.name and galaxy.cult == 0): self.cult+=1
                         # if(shiploc == "Galaxy"): self.energy+=1
-                    self.show()
+                    self.show_stats()
                 del self.dice[use]
 
     def die_throw(self):
@@ -326,7 +331,7 @@ action = {
 # d.showCards()
 g = Card(0, 0, 0, 0)
 p = Player()
-p.show()
+p.show_stats()
 # p.rockettest()
 # p.a()
 # p.a()
