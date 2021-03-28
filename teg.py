@@ -21,7 +21,7 @@ class Card:
         self.stonks = stonks
         self.text = text
         self.name = name
-        self.rockets = [[None] for _ in range(int(length) + 1)]  # +Orbit
+        self.rockets = [["Player"] for _ in range(int(length) + 1)]  # +Orbit
         self.pos = 0
 
     def show(self):
@@ -283,10 +283,13 @@ class Player:
                     is_energy = True if self.dice[use] == "Energy" else False
                     for shiploc in self.ship:
                         for galaxy in self.deck.shown:
-                            if shiploc == galaxy.name and is_energy and galaxy.culture == 0:
-                                self.energy += 1
-                            elif not is_energy and shiploc == galaxy.name and galaxy.culture == 1:
-                                self.cult += 1
+                            if shiploc == galaxy.name:
+                                if is_energy and galaxy.culture == 0:
+                                    self.energy += 1
+                                    print("\t+1 Energy for", galaxy.name)
+                                elif not is_energy and galaxy.culture == 1:
+                                    self.cult += 1
+                                    print("\t+1 Culture for", galaxy.name)
                         if shiploc == "Galaxy":
                             self.energy += 1
                     self.show_stats()
