@@ -172,7 +172,7 @@ class Player:
                                 2: "third",
                                 3: "fourth"
                             }
-                            nroll = intput("Select the number of the " + num.get(i) + " die you wish to reroll: ")
+                            nroll = intput("Select the number of the " + num.get(i) + " die you wish to reroll:")
                             if nroll > len(self.dice) - 1 or nroll < 0:
                                 print("Such die does not exist!")
                             elif self.dice[nroll] == "rerolled":
@@ -195,7 +195,7 @@ class Player:
                     3: "third"
                 }
                 while True:
-                    discard = intput("Select the number of the " + num.get(inst) + " die you wish to convert: ")
+                    discard = intput("Select the number of the " + num.get(inst) + " die you wish to convert:")
                     if discard > len(self.dice) - 1 or discard < 0:
                         print("Such die does not exist!")
                     elif self.dice[discard] == "converted":
@@ -208,7 +208,7 @@ class Player:
                 for i in range(len(action)):
                     print(i, ": ", action[i], sep="")
                 while True:
-                    newdie = intput("Which action do you want to set? ")
+                    newdie = intput("Which action do you want to set?")
                     if newdie > len(action) or newdie < 0:
                         print("Out of range!")
                     else:
@@ -222,7 +222,7 @@ class Player:
     def die_use(self):
         while True:
             show_dice(self.dice)
-            use = intput("Which die do you want to use? ")
+            use = intput("Which die do you want to use?")
 
             if use >= len(self.dice):
                 print("Invalid input.")
