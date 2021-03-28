@@ -129,21 +129,21 @@ class Player:
 
     def die_reroll(self):
         rerolled = False
+        self.dice = [] * self.die_count
 
-        dice = [] * self.die_count
         while True:
             if rerolled:
-                for ice in range(len(dice)):
-                    if dice[ice] == "rerolled":
+                for i in range(len(self.dice)):
+                    if self.dice[i] == "rerolled":
                         throw = random.randint(1, 6)
-                        dice[ice] = action.get(throw)
+                        self.dice[i] = action.get(throw)
             else:
-                for die in range(self.die_count):
+                for i in range(self.die_count):
                     throw = random.randint(1, 6)
-                    dice.append(action.get(throw))
+                    self.dice.append(action.get(throw))
 
             print("You have thrown:")
-            show_dice(dice)
+            show_dice(self.dice)
 
             if rerolled:
                 break
@@ -161,18 +161,23 @@ class Player:
                 elif reroll > 0:
                     for i in range(reroll):
                         while True:
-                            nroll = intput("Which die do you wish to reroll?")
-                            if nroll > len(dice) - 1 or nroll < 0:
+                            num = {
+                                1: "first",
+                                2: "second",
+                                3: "third",
+                                4: "fourth"
+                            }
+                            nroll = intput("Select the number of the " + num.get(reroll) + " die you wish to reroll: ")
+                            if nroll > len(self.dice) - 1 or nroll < 0:
                                 print("Such die does not exist!")
-                            elif dice[nroll] == "rerolled":
+                            elif self.dice[nroll] == "rerolled":
                                 print("You have already rerolled this die!")
                             else:
-                                dice[nroll] = "rerolled"
+                                self.dice[nroll] = "rerolled"
                                 break
                 elif reroll == 0:
                     break
                 rerolled = True
-        return dice
 
     def die_convert(self):
         convert = input("Do you wish to use the convertor? (two dice to set one)\n")
@@ -202,7 +207,6 @@ class Player:
                             del self.dice[i]
                     self.dice.append(newdie)
                     break
-        print()
 
     def die_use(self):
         while True:
