@@ -133,13 +133,13 @@ class Player:
 
         while True:
             if rerolled:
-                for i in range(len(self.dice)):
+                for i in range(self.die_count):
                     if self.dice[i] == "rerolled":
-                        throw = random.randint(1, 6)
+                        throw = random.randint(0, 5)
                         self.dice[i] = action.get(throw)
             else:
                 for i in range(self.die_count):
-                    throw = random.randint(1, 6)
+                    throw = random.randint(0, 5)
                     self.dice.append(action.get(throw))
 
             print("You have thrown:")
@@ -217,12 +217,15 @@ class Player:
                 print("Invalid input.")
 
             else:
-                if self.dice[use] == "Colonization":
-                    colony = input("Do you want to [A]ctivate one of your cards or [U]pgrade your empire?").lower()
+                #
+                # Colonization
+                #
+                if self.dice[use] == action[0]:
+                    colony = input("Do you want to [A]ctivate one of your cards or [U]pgrade your empire? ").lower()
                     if colony == 'u':
                         if self.cult > self.level:
                             if self.energy > self.level:
-                                cultpay = input("Do you want to upgrade using [C]ulture or [E]nergy?").lower()
+                                cultpay = input("Do you want to upgrade using [C]ulture or [E]nergy? ").lower()
                                 self.levelup(1 if cultpay == 'c' else 0)
                             else:
                                 self.levelup(1)
@@ -230,7 +233,10 @@ class Player:
                             print("jj")
                     # Colonization
 
-                if self.dice[use] == "Rocket":
+                #
+                # Rocket
+                #
+                if self.dice[use] == action[1]:
                     print(*self.ship)
                     while True:
                         rocket_id = intput("Which rocket do you want to use?")
@@ -257,7 +263,10 @@ class Player:
                         else:
                             print("You do not have that ship.")
 
-                if self.dice[use] == "Energy" or self.dice[use] == "Culture":
+                #
+                # Energy && Culture
+                #
+                if self.dice[use] == action[2] or self.dice[use] == action[3]:
                     is_energy = True if self.dice[use] == "Energy" else False
                     for shiploc in self.ship:
                         for galaxy in self.deck.shown:
@@ -269,9 +278,11 @@ class Player:
                             self.energy += 1
                     self.show()
 
-                if self.dice[use] == "Diplomacy" or self.dice[use] == "Economy":  # choose one galaxy lol
-                    print("hi")
-                    is_economy = True if self.dice[use] == "Economy" else False
+                #
+                # Economy && Diplomacy
+                #
+                if self.dice[use] == action[4] or self.dice[use] == action[5]:  # choose one galaxy lol
+                    is_economy = True if self.dice[use] == action[4] else False
                     for shiploc in self.ship:
                         for galaxy in self.deck.shown:
                             # print(galaxy.name, shiploc, ": ", shiploc == galaxy.name and e==1 and
@@ -302,12 +313,12 @@ class Player:
 
 
 action = {
-    1: "Colonization",
-    2: "Rocket",
-    3: "Energy",
-    4: "Culture",
-    5: "Economy",
-    6: "Diplomacy"
+    0: "Colonization",
+    1: "Rocket",
+    2: "Energy",
+    3: "Culture",
+    4: "Economy",
+    5: "Diplomacy"
 }
 # if __name__ == "__main__":
 # d = Deck()
