@@ -156,13 +156,7 @@ class Player:
             self.dice = ["rerolled"] * self.die_count
         elif reroll > 0:
             for i in range(reroll):
-                num = {
-                    0: "first",
-                    1: "second",
-                    2: "third",
-                    3: "fourth"
-                }
-                numstr = (" " + num.get(i) + " ") if reroll > 1 else " "
+                numstr = (" " + ordinal.get(i) + " ") if reroll > 1 else " "
                 while True:
                     nroll = intput("Select the number of the" + numstr + "die you wish to reroll:")
                     if nroll > len(self.dice) - 1 or nroll < 0:
@@ -182,39 +176,32 @@ class Player:
         self.show_stats()
 
     def die_convert(self):
-        convert = input("Do you wish to use the convertor? (two dice to set one) ")
-        if convert:
-            show_dice(self.dice)
-            for inst in range(1, 4):
-                num = {
-                    1: "first",
-                    2: "second",
-                    3: "third"
-                }
-                while True:
-                    discard = intput("Select the number of the " + num.get(inst) + " die you wish to convert:")
-                    if discard > len(self.dice) - 1 or discard < 0:
-                        print("Such die does not exist!")
-                    elif self.dice[discard] == "converted":
-                        print("You have already converted this die!")
-                    else:
-                        self.dice[discard] = "converted"
-                        break
+        show_dice(self.dice)
+        for i in range(3):
             while True:
-                print(self.dice)
-                for i in range(len(action)):
-                    print(i, ": ", action[i], sep="")
-                while True:
-                    newdie = intput("Which action do you want to set?")
-                    if newdie > len(action) or newdie < 0:
-                        print("Out of range!")
-                    else:
-                        break
-                for i in range(self.die_count - 1, -1, -1):
-                    if self.dice[i] == 'converted':
-                        del self.dice[i]
-                self.dice.append(action[newdie])
-                break
+                discard = intput("Select the number of the " + ordinal.get(i) + " die you wish to convert:")
+                if discard > len(self.dice) - 1 or discard < 0:
+                    print("Such die does not exist!")
+                elif self.dice[discard] == "converted":
+                    print("You have already converted this die!")
+                else:
+                    self.dice[discard] = "converted"
+                    break
+        while True:
+            for i in range(len(action)):
+                print(i, ": ", action[i], sep="")
+            while True:
+                newdie = intput("Which action do you want to set?")
+                if newdie > len(action) or newdie < 0:
+                    print("Out of range!")
+                else:
+                    break
+            for i in range(self.die_count - 1, -1, -1):
+                if self.dice[i] == 'converted':
+                    del self.dice[i]
+            self.dice.append(action[newdie])
+            break
+        show_dice(p.dice)
 
     def die_use(self):
         while True:
@@ -338,6 +325,13 @@ action = {
     3: "Culture",
     4: "Economy",
     5: "Diplomacy"
+}
+
+ordinal = {
+    0: "first",
+    1: "second",
+    2: "third",
+    3: "fourth"
 }
 
 if __name__ == "__main__":
