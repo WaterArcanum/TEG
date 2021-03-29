@@ -76,12 +76,12 @@ class Deck:
 
     def show_cards(self):
         for card in self.shown:
-            print(card.pos, ". ",
+            print(card.pos, ": ",
                   card.name, "" if (len(card.name) > 7) else "\t", "\t| ",
                   "Culture" if card.culture else "Energy", "\t| ",
                   "Economy" if card.stonks else "Diplomacy", "\t| ",
                   card.points, " points" if int(card.points) > 1 else " point", sep="")
-            print(card.text)
+            print(">", card.text)
             print(*card.rockets)
             print('='*45)
 
