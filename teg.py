@@ -115,6 +115,34 @@ class Player:
         print("Level:", self.level, "| Ships:", self.ships, "| Dice:", self.die_count, "| Energy:", self.energy,
               "| Culture:", self.cult, "| Points:", self.pts)
 
+    def show_rockets(self):
+        for i in range(len(self.ship)):
+            print(i, ": ", self.ship[i], sep="")
+
+    def energy_add(self):
+        pass
+
+    def energy_sub(self):
+        pass
+
+    def cult_add(self):
+        pass
+
+    def cult_sub(self):
+        pass
+
+    def die_add(self):
+        pass
+
+    def ship_add(self):
+        pass
+
+    def pts_add(self):
+        pass
+
+    def ship_move(self):
+        pass
+
     def levelup(self, cultpay):
         self.level += 1
         print("[!] Level up!", sep="", end=" ")
