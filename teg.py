@@ -106,6 +106,7 @@ class Player:
         self.ships = 2
         self.die_count = 4
         self.dice = [] * self.die_count
+        self.rerolled = 0
         for die in range(self.die_count):
             throw = random.randint(1, 6)
             self.dice.append(action.get(throw))
@@ -131,57 +132,54 @@ class Player:
             print("Spent", self.level, "Energy.")
         self.show_stats()
 
-    def die_reroll(self):
-        rerolled = False
-        # self.dice = [] * self.die_count
+    def dice_roll(self):
+        for i in range(self.die_count):
+            throw = random.randint(0, 5)
+            self.dice[i] = action.get(throw)
+        print("You have thrown:")
+        show_dice(self.dice)
 
-        while True:
-            if rerolled:
-                for i in range(self.die_count):
-                    if self.dice[i] == "rerolled":
-                        throw = random.randint(0, 5)
-                        self.dice[i] = action.get(throw)
-            else:
-                for i in range(self.die_count):
-                    throw = random.randint(0, 5)
-                    self.dice[i] = action.get(throw)
-
-            print("You have thrown:")
-            show_dice(self.dice)
-
-            if rerolled:
-                break
-            else:
-                while True:
-                    reroll = intput("How many do you wish to reroll?")
-                    if reroll > self.die_count:
-                        print("You don't have that many dice!")
-                    elif reroll < 0:
-                        print("Cannot reroll less than 0 dice!")
-                    else:
-                        break
-                if reroll == self.die_count:
-                    self.dice = ["rerolled"] * self.die_count
-                elif reroll > 0:
-                    for i in range(reroll):
-                        while True:
-                            num = {
-                                0: "first",
-                                1: "second",
-                                2: "third",
-                                3: "fourth"
-                            }
-                            nroll = intput("Select the number of the " + num.get(i) + " die you wish to reroll:")
-                            if nroll > len(self.dice) - 1 or nroll < 0:
-                                print("Such die does not exist!")
-                            elif self.dice[nroll] == "rerolled":
-                                print("You have already rerolled this die!")
-                            else:
-                                self.dice[nroll] = "rerolled"
-                                break
-                elif reroll == 0:
+    def die_reroll(self):  # TODOING
+        if self.rerolled == 0:
+            self.rerolled = 1
+            while True:
+                reroll = intput("How many dice do you wish to reroll?")
+                if reroll > self.die_count:
+                    print("You don't have that many dice.")
+                elif reroll < 1:
+                    print("Cannot reroll less than 1 die.")
+                else:
                     break
-                rerolled = True
+        else:
+            reroll = 1
+        if reroll == self.die_count:
+            self.dice = ["rerolled"] * self.die_count
+        elif reroll > 0:
+            for i in range(reroll):
+                num = {
+                    0: "first",
+                    1: "second",
+                    2: "third",
+                    3: "fourth"
+                }
+                numstr = (" " + num.get(i) + " ") if reroll > 1 else " "
+                while True:
+                    nroll = intput("Select the number of the" + numstr + "die you wish to reroll:")
+                    if nroll > len(self.dice) - 1 or nroll < 0:
+                        print("Such die does not exist!")
+                    elif self.dice[nroll] == "rerolled":
+                        print("You have already chosen this die!")
+                    else:
+                        self.dice[nroll] = "rerolled"
+                        break
+        for i in range(self.die_count):
+            if self.dice[i] == "rerolled":
+                throw = random.randint(0, 5)
+                self.dice[i] = action.get(throw)
+        self.energy -= 1
+        print("You have thrown:")
+        show_dice(self.dice)
+        self.show_stats()
 
     def die_convert(self):
         convert = input("Do you wish to use the convertor? (two dice to set one) ")
@@ -326,6 +324,12 @@ class Player:
         self.die_convert()
         self.die_use()
 
+    def start_turn(self):
+        self.dice_roll()
+
+    def end_turn(self):
+        self.dice = []
+
 
 action = {
     0: "Colonization",
@@ -342,21 +346,30 @@ if __name__ == "__main__":
     converted = False
 
     p.show_stats()
-    while True:
-        move = input("S — Stats; P — Planets; R — Roll dice; C — Convert dice; U — Use dice\n").lower()
-        if move == 's':
-            p.show_stats()
-        elif move == 'p':
-            deck.show_cards()
-        elif move == 'r':
-            p.die_reroll()
-        elif move == 'c':
-            if not converted:
-                p.die_convert()
-                converted = True
+    p.dice_roll()
+    while True:  # So far there is only one player, so deal with this
+        while True:
+            move = input("S — Stats; P — Planets; D — Dice; R — Roll dice; "
+                         "C — Convert dice; U — Use dice; E — End turn\n")
+            move = move.lower()
+            if move == 's':
+                p.show_stats()
+            elif move == 'p':
+                deck.show_cards()
+            elif move == 'd':
+                show_dice(p.dice)
+            elif move == 'r':
+                p.die_reroll()
+            elif move == 'c':
+                if not converted:
+                    p.die_convert()
+                    converted = True
+                else:
+                    print("You have already converted this turn.")
+            elif move == 'u':
+                p.die_use()
+            elif move == 'e':
+                p.end_turn()
+                break
             else:
-                print("You have already converted this turn.")
-        elif move == 'u':
-            p.die_use()
-        else:
-            print("Invalid input.")
+                print("Invalid input.")
