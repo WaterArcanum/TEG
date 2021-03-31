@@ -317,7 +317,7 @@ class Player:
                 is_energy = True if self.dice[use] == "Energy" else False
                 for shiploc in self.ship:
                     for galaxy in deck.shown:
-                        if shiploc == galaxy.name:
+                        if galaxy.name in shiploc:
                             if is_energy and galaxy.culture == 0:
                                 self.energy += 1
                                 print("\t+1 Energy for", galaxy.name)
@@ -337,7 +337,7 @@ class Player:
                     for galaxy in deck.shown:
                         # print(galaxy.name, shiploc, ": ", shiploc == galaxy.name and e==1 and
                         # galaxy.stonks==1)
-                        if shiploc == galaxy.name and is_economy and galaxy.stonks:
+                        if galaxy.name in shiploc and is_economy and galaxy.stonks:
                             yeah = 0
                             for loc in galaxy.rockets:
                                 if loc != 0 and "Player" in loc:
