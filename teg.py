@@ -125,15 +125,25 @@ class Player:
         self.energy += amount
         print("\t+", amount, " Energy from", source, ".", sep="")
 
-    def energy_sub(self):
-        pass
+    def energy_sub(self, amount):
+        if self.energy - amount < 0:
+            print("Insufficient amount of Energy.")
+            return False
+        self.energy -= amount
+        print("Spent", amount, "Energy.")
+        return True
 
     def cult_add(self, source, amount=1):
         self.cult += amount
         print("\t+", amount, " Culture from", source, ".", sep="")
 
-    def cult_sub(self):
-        pass
+    def cult_sub(self, amount):
+        if self.cult - amount < 0:
+            print("Insufficient amount of Culture.")
+            return False
+        self.cult -= amount
+        print("Spent", amount, "Culture.")
+        return True
 
     def die_add(self, amount=1):
         self.die_count += amount
@@ -205,19 +215,21 @@ class Player:
         return True
 
     def levelup(self, cultpay):
-        self.level += 1
-        print("[!] Level up!", sep="", end=" ")
-        if self.level % 2 == 0:
-            self.die_add()
-        else:
-            self.ship_add()
         if cultpay:
-            self.cult -= self.level
-            print("Spent", self.level, "Culture.")
+            paid = self.cult_sub(self.level)
         else:
-            self.energy -= self.level
-            print("Spent", self.level, "Energy.")
-        self.show_stats()
+            paid = self.energy_sub(self.level)
+        if paid:
+            self.level += 1
+            print("[!] Level up!", sep="", end=" ")
+            if self.level % 2 == 0:
+                self.die_add()
+            else:
+                self.ship_add()
+            self.show_stats()
+            return True
+        else:
+            return False
 
     def dice_roll(self):
         for i in range(self.die_count):
@@ -241,6 +253,10 @@ class Player:
         if reroll == self.die_count:
             self.dice = ["rerolled"] * self.die_count
         elif reroll > 0:
+            if reroll == 1:
+                paid = self.energy_sub(1)
+                if not paid:
+                    return False
             for i in range(reroll):
                 numstr = (" " + ordinal.get(i) + " ") if reroll > 1 else " "
                 while True:
@@ -256,7 +272,6 @@ class Player:
             if self.dice[i] == "rerolled":
                 throw = random.randint(0, 5)
                 self.dice[i] = action.get(throw)
-        self.energy -= 1
         print("You have thrown:")
         show_dice(self.dice)
         self.show_stats()
@@ -312,7 +327,8 @@ class Player:
                     elif self.energy > self.level:
                         self.levelup(0)
                     else:
-                        print("jj")
+                        print("Insufficient resources.")
+                        return False
                 # Colonization
 
             #
