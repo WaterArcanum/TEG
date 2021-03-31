@@ -108,9 +108,6 @@ class Player:
         self.in_galaxy = 2
         self.dice = [] * self.die_count
         self.rerolled = 0
-        for die in range(self.die_count):
-            throw = random.randint(1, 6)
-            self.dice.append(action.get(throw))
 
     def show_stats(self):
         print("Level:", self.level, "| Ships:", self.ships, "| Dice:", self.die_count, "| Energy:", self.energy,
