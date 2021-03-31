@@ -162,6 +162,8 @@ class Player:
 
         self.ship_remove(rocket)
 
+        # TODO: Add prompt to activate effect upon landing on the surface
+
         deck.shown[planet].rockets[pos].append(self.name)
         self.ship[rocket] = planet_name + " (" + ("S" if pos == 0 else "O") + ")"
         deck.show_cards()
