@@ -24,7 +24,7 @@ class Card:
         self.stonks = stonks
         self.text = text
         self.name = name
-        self.rockets = [[[]] for _ in range(int(length) + 1)]  # +Orbit
+        self.rockets = [[] for _ in range(int(length) + 1)]  # +Orbit
         self.pos = 0
 
     def show(self):
@@ -160,6 +160,15 @@ class Player:
                 orbit.lower()
                 pos = 0 if orbit == "s" else 1
 
+        self.ship_remove(rocket)
+
+        deck.shown[planet].rockets[pos].append(self.name)
+        self.ship[rocket] = planet_name + " (" + ("S" if pos == 0 else "O") + ")"
+        deck.show_cards()
+        print("Flown to the", planet_name, "surface." if pos == 0 else "orbit.")
+        return True
+
+    def ship_remove(self, rocket):
         # Horrible, but it works
         if self.ship[rocket] != "Galaxy":
             for i in range(len(deck.shown)):
@@ -167,15 +176,16 @@ class Player:
                     for j in range(len(deck.shown[i].rockets)):
                         for k in range(len(deck.shown[i].rockets[j])):
                             try:
-                                deck.shown[i].rockets[0 if pos == 0 else 1:][k].remove(self.name)
+                                deck.shown[i].rockets[0 if self.ship[rocket].split(' ')[1] == '(S)' else 1:][k] \
+                                    .remove(self.name)
                             except ValueError:
                                 pass
 
-        deck.shown[planet].rockets[pos].append(self.name)
-        self.ship[rocket] = planet_name + " (" + ("S" if pos == 0 else "O") + ")"
-        deck.show_cards()
-        print("Flown to the", planet_name, "surface." if pos == 0 else "orbit.")
-        return True
+    def ship_return(self, rocket, do_print=True):
+        origin = self.ship[rocket].split(' ')[0]
+        self.ship[rocket] = "Galaxy"
+        if do_print:
+            print("Returned to your Galaxy from " + origin + ".", sep="")
 
     def levelup(self, cultpay):
         self.level += 1
