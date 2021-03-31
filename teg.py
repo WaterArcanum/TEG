@@ -106,7 +106,7 @@ class Player:
         self.ships = 2
         self.die_count = 4
         self.in_galaxy = 2
-        self.dice = [] * self.die_count
+        self.dice = [" "] * self.die_count
         self.rerolled = 0
 
     def show_stats(self):
