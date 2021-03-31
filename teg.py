@@ -110,6 +110,7 @@ class Player:
         self.die_count = 4
         self.in_galaxy = 2
         self.dice = [" "] * self.die_count
+        self.cards = []
         self.rerolled = 0
 
     def show_stats(self):
@@ -143,7 +144,10 @@ class Player:
     def pts_add(self):
         pass
 
-    def ship_move(self, rocket, planet):
+    def gain_card(self, card):
+        pass
+
+    def ship_migrate(self, rocket, planet):
         planet_name = deck.shown[planet].name
         if planet_name in self.ship[rocket]:
             print("You cannot fly between the orbit and the surface.")
@@ -329,7 +333,7 @@ class Player:
                             if planet == "g":
                                 moved = self.ship_return(rocket_id)
                             elif planet < len(deck.shown):
-                                moved = self.ship_move(rocket_id, planet)
+                                moved = self.ship_migrate(rocket_id, planet)
                             if moved:
                                 break
                         else:
