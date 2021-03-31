@@ -120,14 +120,16 @@ class Player:
         for i in range(len(self.ship)):
             print(i, ": ", self.ship[i], sep="")
 
-    def energy_add(self):
-        pass
+    def energy_add(self, source):
+        self.energy += 1
+        print("\t+1 Energy from", source + ".")
 
     def energy_sub(self):
         pass
 
-    def cult_add(self):
-        pass
+    def cult_add(self, source):
+        self.cult += 1
+        print("\t+1 Culture from", source + ".")
 
     def cult_sub(self):
         pass
@@ -344,13 +346,11 @@ class Player:
                     for galaxy in deck.shown:
                         if galaxy.name in shiploc:
                             if is_energy and galaxy.culture == 0:
-                                self.energy += 1
-                                print("\t+1 Energy for", galaxy.name)
+                                self.energy_add(galaxy.name)
                             elif not is_energy and galaxy.culture == 1:
-                                self.cult += 1
-                                print("\t+1 Culture for", galaxy.name)
-                    if shiploc == "Galaxy":
-                        self.energy += 1
+                                self.cult_add(galaxy.name)
+                    if is_energy and shiploc == "Galaxy":
+                        self.energy_add("your Galaxy")
                 self.show_stats()
 
             #
