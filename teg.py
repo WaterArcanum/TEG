@@ -182,10 +182,15 @@ class Player:
                                 pass
 
     def ship_return(self, rocket, do_print=True):
+        if self.ship[rocket] == "Galaxy":
+            print("The rocket is already in your Galaxy.")
+            return False
         origin = self.ship[rocket].split(' ')[0]
+        self.ship_remove(rocket)
         self.ship[rocket] = "Galaxy"
         if do_print:
             print("Returned to your Galaxy from " + origin + ".", sep="")
+        return True
 
     def levelup(self, cultpay):
         self.level += 1
@@ -310,11 +315,19 @@ class Player:
                     if rocket_id < len(self.ship):
                         if self.ship[rocket_id] is not None:
                             deck.show_cards()
-                            planet = intput("Which planet do you want to fly to?")
-                            if planet < len(deck.shown):
+                            print('[G]alaxy:', end=" ")
+                            for rocket in self.ship:
+                                if rocket == "Galaxy":
+                                    print(self.name, end=" ")
+                            print()
+                            moved = False
+                            planet = intput("Which planet do you want to fly to?", exception="g")
+                            if planet == "g":
+                                moved = self.ship_return(rocket_id)
+                            elif planet < len(deck.shown):
                                 moved = self.ship_move(rocket_id, planet)
-                                if moved:
-                                    break
+                            if moved:
+                                break
                         else:
                             print("This ship is not available.")
                     else:
