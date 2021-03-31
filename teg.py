@@ -1,16 +1,19 @@
 import random
 
 
-def intput(prompt, errormsg="Invalid input."):
+def intput(prompt, exception=None, errormsg="Invalid input."):
     print(prompt, end=" ")
     while True:
         userinput = input()
-        try:
-            userinput = int(userinput)
-        except ValueError:
-            print(errormsg)
-        else:
+        if exception is not None and userinput == exception:
             return userinput
+        else:
+            try:
+                userinput = int(userinput)
+            except ValueError:
+                print(errormsg)
+            else:
+                return userinput
 
 
 class Card:
