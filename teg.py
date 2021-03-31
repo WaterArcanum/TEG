@@ -121,24 +121,28 @@ class Player:
         for i in range(len(self.ship)):
             print(i, ": ", self.ship[i], sep="")
 
-    def energy_add(self, source):
-        self.energy += 1
-        print("\t+1 Energy from", source + ".")
+    def energy_add(self, source, amount=1):
+        self.energy += amount
+        print("\t+", amount, " Energy from", source, ".", sep="")
 
     def energy_sub(self):
         pass
 
-    def cult_add(self, source):
-        self.cult += 1
-        print("\t+1 Culture from", source + ".")
+    def cult_add(self, source, amount=1):
+        self.cult += amount
+        print("\t+", amount, " Culture from", source, ".", sep="")
 
     def cult_sub(self):
         pass
 
-    def die_add(self):
+    def die_add(self, amount=1):
+        self.die_count += amount
+        print("Gained", amount, "die." if amount == 1 else "dice.")
         pass
 
-    def ship_add(self):
+    def ship_add(self, amount=1):
+        self.ships += amount
+        print("Gained", amount, "ship." if amount == 1 else "ships.")
         pass
 
     def pts_add(self):
@@ -204,11 +208,9 @@ class Player:
         self.level += 1
         print("[!] Level up!", sep="", end=" ")
         if self.level % 2 == 0:
-            self.die_count += 1
-            print("Gained 1 die.", end=" ")
+            self.die_add()
         else:
-            self.ships += 1
-            print("Gained 1 ship.", end=" ")
+            self.ship_add()
         if cultpay:
             self.cult -= self.level
             print("Spent", self.level, "Culture.")
