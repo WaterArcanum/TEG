@@ -21,7 +21,7 @@ class Card:
         self.stonks = stonks
         self.text = text
         self.name = name
-        self.rockets = [["Player"] for _ in range(int(length) + 1)]  # +Orbit
+        self.rockets = [[[]] for _ in range(int(length) + 1)]  # +Orbit
         self.pos = 0
 
     def show(self):
@@ -96,15 +96,16 @@ def show_dice(dice):
 
 
 class Player:
-    ship = ["Drewkaiden", "Jakks", None, None]
-
     def __init__(self):
+        self.ship = ["Galaxy", "Galaxy", "Galaxy"]
+        self.name = "Player"
         self.level = 1
         self.cult = 10
         self.energy = 2
         self.pts = 0
         self.ships = 2
         self.die_count = 4
+        self.in_galaxy = 2
         self.dice = [] * self.die_count
         self.rerolled = 0
         for die in range(self.die_count):
@@ -140,8 +141,41 @@ class Player:
     def pts_add(self):
         pass
 
-    def ship_move(self):
-        pass
+    def ship_move(self, rocket, planet):
+        planet_name = deck.shown[planet].name
+        if planet_name in self.ship[rocket]:
+            print("You cannot fly between the orbit and the surface.")
+            return False
+        if any(self.name in slot for slot in deck.shown[planet].rockets[1:]):
+            if self.name in deck.shown[planet].rockets[0]:
+                print("You have already occupied this planet.")
+                return False
+            else:
+                pos = 0
+        else:
+            if self.name in deck.shown[planet].rockets[0]:
+                pos = 1
+            else:
+                orbit = input("Do you want to fly to the [O]rbit or the [S]urface? ")
+                orbit.lower()
+                pos = 0 if orbit == "s" else 1
+
+        # Horrible, but it works
+        if self.ship[rocket] != "Galaxy":
+            for i in range(len(deck.shown)):
+                if deck.shown[i].name in self.ship[rocket]:
+                    for j in range(len(deck.shown[i].rockets)):
+                        for k in range(len(deck.shown[i].rockets[j])):
+                            try:
+                                deck.shown[i].rockets[0 if pos == 0 else 1:][k].remove(self.name)
+                            except ValueError:
+                                pass
+
+        deck.shown[planet].rockets[pos].append(self.name)
+        self.ship[rocket] = planet_name + " (" + ("S" if pos == 0 else "O") + ")"
+        deck.show_cards()
+        print("Flown to the", planet_name, "surface." if pos == 0 else "orbit.")
+        return True
 
     def levelup(self, cultpay):
         self.level += 1
@@ -167,7 +201,8 @@ class Player:
         print("You have thrown:")
         show_dice(self.dice)
 
-    def die_reroll(self):  # TODOING
+    def die_reroll(self):
+        reroll = 1
         if self.rerolled == 0:
             self.rerolled = 1
             while True:
@@ -178,8 +213,6 @@ class Player:
                     print("Cannot reroll less than 1 die.")
                 else:
                     break
-        else:
-            reroll = 1
         if reroll == self.die_count:
             self.dice = ["rerolled"] * self.die_count
         elif reroll > 0:
@@ -232,107 +265,96 @@ class Player:
         show_dice(p.dice)
 
     def die_use(self):
-        while True:
-            show_dice(self.dice)
-            use = intput("Which die do you want to use?")
+        show_dice(self.dice)
+        use = intput("Which die do you want to use?")
 
-            if use >= len(self.dice):
-                print("Invalid input.")
+        if use >= len(self.dice):
+            print("Invalid input.")
 
-            else:
-                #
+        else:
+            #
+            # Colonization
+            #
+            if self.dice[use] == action[0]:
+                colony = input("Do you want to [A]ctivate one of your cards or [U]pgrade your empire? ").lower()
+                if colony == 'u':
+                    if self.cult > self.level:
+                        if self.energy > self.level:
+                            cultpay = input("Do you want to upgrade using [C]ulture or [E]nergy? ").lower()
+                            self.levelup(1 if cultpay == 'c' else 0)
+                        else:
+                            self.levelup(1)
+                    elif self.energy > self.level:
+                        self.levelup(0)
+                    else:
+                        print("jj")
                 # Colonization
-                #
-                if self.dice[use] == action[0]:
-                    colony = input("Do you want to [A]ctivate one of your cards or [U]pgrade your empire? ").lower()
-                    if colony == 'u':
-                        if self.cult > self.level:
-                            if self.energy > self.level:
-                                cultpay = input("Do you want to upgrade using [C]ulture or [E]nergy? ").lower()
-                                self.levelup(1 if cultpay == 'c' else 0)
-                            else:
-                                self.levelup(1)
-                        elif self.energy > self.level:
-                            self.levelup(0)
+
+            #
+            # Rocket
+            #
+            if self.dice[use] == action[1]:
+                while True:
+                    self.show_rockets()
+                    rocket_id = intput("Which rocket do you want to use?")
+                    if rocket_id < len(self.ship):
+                        if self.ship[rocket_id] is not None:
+                            deck.show_cards()
+                            planet = intput("Which planet do you want to fly to?")
+                            if planet < len(deck.shown):
+                                moved = self.ship_move(rocket_id, planet)
+                                if moved:
+                                    break
                         else:
-                            print("jj")
-                    # Colonization
+                            print("This ship is not available.")
+                    else:
+                        print("You do not have that ship.")
 
-                #
-                # Rocket
-                #
-                if self.dice[use] == action[1]:
-                    print(*self.ship)
-                    while True:
-                        rocket_id = intput("Which rocket do you want to use?")
-                        if rocket_id < len(self.ship):
-                            if self.ship[rocket_id] is not None:
-                                deck.show_cards()
-                                while True:
-                                    fly = intput("Which galaxy do you want to fly to?")
-                                    if fly < len(deck.shown):
-                                        if any("Player" in sublist for sublist in deck.shown[fly].rockets):
-                                            print("You have already occupied this galaxy!")
-                                            break
-                                        else:
-                                            orbit = input("Do you want to fly to the [O]rbit or to the [S]urface?")
-                                            if self.ship[rocket_id] == deck.shown[fly].name:
-                                                print("You cannot fly between the orbit and the surface.")
-                                            else:
-                                                deck.shown[fly].rockets[0 if orbit == "S" else 1].append("Player")
-                                                self.ship[rocket_id] = deck.shown[fly].name
-                                                break
-                                break
-                            else:
-                                print("This ship is not available.")
-                        else:
-                            print("You do not have that ship.")
+            #
+            # Energy && Culture
+            #
+            if self.dice[use] == action[2] or self.dice[use] == action[3]:
+                is_energy = True if self.dice[use] == "Energy" else False
+                for shiploc in self.ship:
+                    for galaxy in deck.shown:
+                        if shiploc == galaxy.name:
+                            if is_energy and galaxy.culture == 0:
+                                self.energy += 1
+                                print("\t+1 Energy for", galaxy.name)
+                            elif not is_energy and galaxy.culture == 1:
+                                self.cult += 1
+                                print("\t+1 Culture for", galaxy.name)
+                    if shiploc == "Galaxy":
+                        self.energy += 1
+                self.show_stats()
 
-                #
-                # Energy && Culture
-                #
-                if self.dice[use] == action[2] or self.dice[use] == action[3]:
-                    is_energy = True if self.dice[use] == "Energy" else False
-                    for shiploc in self.ship:
-                        for galaxy in deck.shown:
-                            if shiploc == galaxy.name:
-                                if is_energy and galaxy.culture == 0:
-                                    self.energy += 1
-                                    print("\t+1 Energy for", galaxy.name)
-                                elif not is_energy and galaxy.culture == 1:
-                                    self.cult += 1
-                                    print("\t+1 Culture for", galaxy.name)
-                        if shiploc == "Galaxy":
-                            self.energy += 1
-                    self.show_stats()
-
-                #
-                # Economy && Diplomacy
-                #
-                if self.dice[use] == action[4] or self.dice[use] == action[5]:  # choose one galaxy lol
-                    is_economy = True if self.dice[use] == action[4] else False
-                    for shiploc in self.ship:
-                        for galaxy in deck.shown:
-                            # print(galaxy.name, shiploc, ": ", shiploc == galaxy.name and e==1 and
-                            # galaxy.stonks==1)
-                            if shiploc == galaxy.name and is_economy and galaxy.stonks:
-                                yeah = 0
-                                for loc in galaxy.rockets:
-                                    if loc != 0 and "Player" in loc:
-                                        loc.remove("Player")
-                                        print("removed")
-                                        yeah = 1
-                                        print("y: ", yeah)
-                                    if yeah:
-                                        loc.append("Player")
-                                        print("appended")
-                                        yeah = 0
-                                        print("y: ", yeah)
-                                    print("Player" in loc)
-                            # elif(not e and shiploc == galaxy.name and galaxy.cult == 0): self.cult+=1
-                        # if(shiploc == "Galaxy"): self.energy+=1
-                    self.show_stats()
-                del self.dice[use]
+            #
+            # Economy && Diplomacy
+            #
+            if self.dice[use] == action[4] or self.dice[use] == action[5]:  # choose one galaxy lol
+                is_economy = True if self.dice[use] == action[4] else False
+                for shiploc in self.ship:
+                    for galaxy in deck.shown:
+                        # print(galaxy.name, shiploc, ": ", shiploc == galaxy.name and e==1 and
+                        # galaxy.stonks==1)
+                        if shiploc == galaxy.name and is_economy and galaxy.stonks:
+                            yeah = 0
+                            for loc in galaxy.rockets:
+                                if loc != 0 and "Player" in loc:
+                                    loc.remove("Player")
+                                    print("removed")
+                                    yeah = 1
+                                    print("y: ", yeah)
+                                if yeah:
+                                    loc.append("Player")
+                                    print("appended")
+                                    yeah = 0
+                                    print("y: ", yeah)
+                                print("Player" in loc)
+                        # elif(not e and shiploc == galaxy.name and galaxy.cult == 0): self.cult+=1
+                    # if(shiploc == "Galaxy"): self.energy+=1
+                self.show_stats()
+            del self.dice[use]
 
     def die_throw(self):
         self.die_reroll()
@@ -371,8 +393,8 @@ if __name__ == "__main__":
     p.dice_roll()
     while True:  # So far there is only one player, so deal with this
         while True:
-            move = input("S — Stats; P — Planets; D — Dice; R — Roll dice; "
-                         "C — Convert dice; U — Use dice; E — End turn\n")
+            move = input("S — Stats; P — Planets; D — Dice; R – Rockets; "
+                         "RR — Reroll dice; C — Convert dice; U — Use dice; E — End turn\n")
             move = move.lower()
             if move == 's':
                 p.show_stats()
@@ -381,6 +403,8 @@ if __name__ == "__main__":
             elif move == 'd':
                 show_dice(p.dice)
             elif move == 'r':
+                p.show_rockets()
+            elif move == 'rr':
                 p.die_reroll()
             elif move == 'c':
                 if not converted:
