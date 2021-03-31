@@ -161,55 +161,73 @@ class Player:
     def gain_card(self, card):
         pass
 
-    def ship_migrate(self, rocket, planet):
-        planet_name = deck.shown[planet].name
-        if planet_name in self.ship[rocket]:
+    def ship_advance(self, rocket_id, planet_id):
+        planet = deck.shown[planet_id]
+        planet_name = planet.name
+        if planet_name in self.ship[rocket_id]:
+            pos = 1
+            for i in range(len(planet.rockets)):
+                print("i:", i)
+                # for j in range(len(planet.rockets[i])):
+                if self.name in planet.rockets[i]:
+                    print("pos")
+                    pos = i
+                    break
+            if pos == len(planet.rockets)-1:
+                self.gain_card(planet_id)
+            else:
+                planet.rockets[pos].remove(self.name)
+                planet.rockets[pos+1].append(self.name)
+
+    def ship_migrate(self, rocket_id, planet_id):
+        planet_name = deck.shown[planet_id].name
+        if planet_name in self.ship[rocket_id]:
             print("You cannot fly between the orbit and the surface.")
             return False
-        if any(self.name in slot for slot in deck.shown[planet].rockets[1:]):
-            if self.name in deck.shown[planet].rockets[0]:
+        if any(self.name in slot for slot in deck.shown[planet_id].rockets[1:]):
+            if self.name in deck.shown[planet_id].rockets[0]:
                 print("You have already occupied this planet.")
                 return False
             else:
                 pos = 0
         else:
-            if self.name in deck.shown[planet].rockets[0]:
+            if self.name in deck.shown[planet_id].rockets[0]:
                 pos = 1
             else:
                 orbit = input("Do you want to fly to the [O]rbit or the [S]urface? ")
                 orbit.lower()
                 pos = 0 if orbit == "s" else 1
 
-        self.ship_remove(rocket)
+        self.ship_remove(rocket_id)
 
         # TODO: Add prompt to activate effect upon landing on the surface
 
-        deck.shown[planet].rockets[pos].append(self.name)
-        self.ship[rocket] = planet_name + " (" + ("S" if pos == 0 else "O") + ")"
+        deck.shown[planet_id].rockets[pos].append(self.name)
+        self.ship[rocket_id] = planet_name + " (" + ("S" if pos == 0 else "O") + ")"
         deck.show_cards()
         print("Flown to the", planet_name, "surface." if pos == 0 else "orbit.")
         return True
 
-    def ship_remove(self, rocket):
+    def ship_remove(self, rocket_id):
         # Horrible, but it works
-        if self.ship[rocket] != "Galaxy":
+        if self.ship[rocket_id] != "Galaxy":
             for i in range(len(deck.shown)):
-                if deck.shown[i].name in self.ship[rocket]:
+                if deck.shown[i].name in self.ship[rocket_id]:
                     for j in range(len(deck.shown[i].rockets)):
                         for k in range(len(deck.shown[i].rockets[j])):
                             try:
-                                deck.shown[i].rockets[0 if self.ship[rocket].split(' ')[1] == '(S)' else 1:][k] \
+                                deck.shown[i].rockets[0 if self.ship[rocket_id].split(' ')[1] == '(S)' else 1:][k] \
                                     .remove(self.name)
                             except ValueError:
                                 pass
 
-    def ship_return(self, rocket, do_print=True):
-        if self.ship[rocket] == "Galaxy":
+    def ship_return(self, rocket_id, do_print=True):
+        if self.ship[rocket_id] == "Galaxy":
             print("The rocket is already in your Galaxy.")
             return False
-        origin = self.ship[rocket].split(' ')[0]
-        self.ship_remove(rocket)
-        self.ship[rocket] = "Galaxy"
+        origin = self.ship[rocket_id].split(' ')[0]
+        self.ship_remove(rocket_id)
+        self.ship[rocket_id] = "Galaxy"
         if do_print:
             print("Returned to your Galaxy from " + origin + ".", sep="")
         return True
@@ -380,27 +398,17 @@ class Player:
             #
             if self.dice[use] == action[4] or self.dice[use] == action[5]:  # choose one galaxy lol
                 is_economy = True if self.dice[use] == action[4] else False
-                for shiploc in self.ship:
-                    for galaxy in deck.shown:
+                for ship_id in range(len(self.ship)):
+                    shiploc = self.ship[ship_id]
+                    for planet_id in range(len(deck.shown)):
+                        galaxy = deck.shown[planet_id]
                         # print(galaxy.name, shiploc, ": ", shiploc == galaxy.name and e==1 and
                         # galaxy.stonks==1)
-                        if galaxy.name in shiploc and is_economy and galaxy.stonks:
-                            yeah = 0
-                            for loc in galaxy.rockets:
-                                if loc != 0 and "Player" in loc:
-                                    loc.remove("Player")
-                                    print("removed")
-                                    yeah = 1
-                                    print("y: ", yeah)
-                                if yeah:
-                                    loc.append("Player")
-                                    print("appended")
-                                    yeah = 0
-                                    print("y: ", yeah)
-                                print("Player" in loc)
-                        # elif(not e and shiploc == galaxy.name and galaxy.cult == 0): self.cult+=1
-                    # if(shiploc == "Galaxy"): self.energy+=1
+                        if galaxy.name in shiploc:
+                            if (is_economy and galaxy.stonks) or (not is_economy and not galaxy.stonks):
+                                self.ship_advance(ship_id, planet_id)
                 self.show_stats()
+
             del self.dice[use]
 
     def die_throw(self):
