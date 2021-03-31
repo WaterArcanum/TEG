@@ -6,7 +6,7 @@ def intput(prompt, exception=None, errormsg="Invalid input."):
     while True:
         userinput = input()
         if exception is not None and userinput == exception:
-            return userinput
+            return userinput.lower()
         else:
             try:
                 userinput = int(userinput)
