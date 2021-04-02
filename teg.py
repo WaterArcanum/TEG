@@ -47,8 +47,8 @@ class Deck:
         self.shown = []
         self.deck()
         self.shuffle()
-        for i in range(4):
-            self.draw(i)
+        for _ in range(4):
+            self.draw()
 
     def deck(self):
         self.cards = []
@@ -72,10 +72,10 @@ class Deck:
             r = random.randint(0, i)
             self.cards[i], self.cards[r] = self.cards[r], self.cards[i]
 
-    def draw(self, pindex):
+    def draw(self):
         card = self.cards.pop()
         self.shown.append(card)
-        card.pos = pindex
+        card.pos = len(self.shown)-1
 
     def show_cards(self):
         for card in self.shown:
