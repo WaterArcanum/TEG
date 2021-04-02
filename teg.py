@@ -58,7 +58,7 @@ class Deck:
             item = line.split(";")
             name = item[0]
             stonks = 1 if item[1] == "E" else 0
-            length = int(item[2]) + 1
+            length = int(item[2])
             cult = 1 if item[3] == "C" else 0
             pts = item[4]
             text = item[5].replace("\n", "")
